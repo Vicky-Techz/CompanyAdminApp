@@ -16,8 +16,8 @@ export default function ForgotPassword() {
     setLoading(true)
 
     try {
-      await resetPassword(email)
-      setMessage('Password reset email sent. Check your inbox.')
+      await resetPassword(email.trim())
+      setMessage(`Password reset email sent to ${email.trim()}. Check your inbox.`)
     } catch (err) {
       setError(err.message || 'Unable to send reset link.')
     } finally {
@@ -33,8 +33,9 @@ export default function ForgotPassword() {
         <form onSubmit={handleSubmit} className="auth-form">
           <label>
             Email address
-            <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
+            <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="you@example.com" />
           </label>
+          <p className="form-note">Reset emails only work for registered Firebase auth accounts. If you do not receive one, check spam and confirm the email exists in Firebase Authentication.</p>
           {message && <div className="form-note success-note">{message}</div>}
           {error && <div className="form-error">{error}</div>}
           <button type="submit" disabled={loading} className="button-primary">

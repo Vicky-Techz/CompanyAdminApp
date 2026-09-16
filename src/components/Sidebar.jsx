@@ -1,9 +1,14 @@
 import { NavLink } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import logo from '../../icon/logo.png'
 
-const navItems = [
+const baseNavItems = [
   { to: '/', label: 'Dashboard' },
   { to: '/students', label: 'Students' },
   { to: '/certificates', label: 'Certificates' },
+]
+
+const adminNavItems = [
   { to: '/staff', label: 'Staff' },
   { to: '/programs', label: 'Programs / Batches' },
   { to: '/bulk', label: 'Bulk Operations' },
@@ -14,14 +19,18 @@ const navItems = [
 ]
 
 export default function Sidebar() {
+  const { user } = useAuth()
+  const isSuperUser = user?.role === 'super_admin'
+  const navItems = [...baseNavItems, ...(isSuperUser ? adminNavItems : [])]
+
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">E</div>
-        <div>
-          <p>EVOLVE</p>
-          <span>Robotics Admin</span>
+        <div className="brand-mark">
+          <img src={logo} alt="Evolve logo" />
         </div>
+        <p>Evolve robotics</p>
+        <span className="brand-tagline">deeply routed</span>
       </div>
 
       <nav>
@@ -33,8 +42,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        <p>Demo access available</p>
-        <span>v1.0</span>
+        <p>{user?.displayName || user?.email || 'User'}</p>
       </div>
     </aside>
   )

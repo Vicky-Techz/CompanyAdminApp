@@ -30,7 +30,7 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
-The app gracefully falls back to demo mode if Firebase is not configured.
+Firebase must be configured before signing in or saving persistent data.
 
 ## Project Structure
 
@@ -70,7 +70,7 @@ const { PAGINATION, FILE_LIMITS, ROUTES } = APP_CONFIG
 
 ### Key Features
 
-- Authentication with Firebase or demo mode
+- Authentication with Firebase
 - Student management (manual add, Excel import)
 - Certificate generation with custom templates
 - Staff approval workflow
@@ -78,13 +78,6 @@ const { PAGINATION, FILE_LIMITS, ROUTES } = APP_CONFIG
 - Reports and analytics
 - Payment receipts
 - Configurable settings and utilities
-
-## Demo Access
-
-If Firebase is not configured, the app runs in demo mode with sample data:
-- Email: `demo@example.com`
-- Password: any value
-- Uses local state instead of Firestore
 
 ## Development
 

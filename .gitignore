@@ -6,11 +6,18 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+firebase-debug.log
+firebase-export-*
 
 node_modules
 dist
 dist-ssr
+coverage
 *.local
+*.tmp
+
+# Firebase local emulator data
+.firebase/
 
 # Editor directories and files
 .vscode/*

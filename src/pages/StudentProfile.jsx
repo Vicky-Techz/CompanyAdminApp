@@ -5,15 +5,16 @@ import { isFirebaseEnabled } from '../firebaseConfig'
 
 export default function StudentProfile() {
   const { id } = useParams()
-  const [student, setStudent] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [student, setStudent] = useState(() => ({
+    name: 'Demo Student',
+    email: 'demo@student.com',
+    batch: '2024',
+    category: 'Robotics',
+  }))
+  const [loading, setLoading] = useState(!isFirebaseEnabled)
 
   useEffect(() => {
-    if (!isFirebaseEnabled) {
-      setStudent({ name: 'Demo Student', email: 'demo@student.com', batch: '2024', category: 'Robotics' })
-      setLoading(false)
-      return
-    }
+    if (!isFirebaseEnabled) return
 
     fetchDocument('students', id)
       .then((item) => {

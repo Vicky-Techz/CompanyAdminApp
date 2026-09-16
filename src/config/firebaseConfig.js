@@ -6,7 +6,7 @@ import { getStorage } from 'firebase/storage'
 /**
  * Firebase Configuration
  * Loads credentials from environment variables
- * Falls back to demo mode if credentials are incomplete
+ * Firebase is required for authentication and persistent data storage.
  */
 
 const firebaseConfig = {
@@ -30,7 +30,7 @@ let app
 if (firebaseAvailable) {
   app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
 } else {
-  console.warn('Firebase config is incomplete. The app will run in demo mode.')
+  console.warn('Firebase config is incomplete. Add the values from your Firebase web app to .env.')
 }
 
 export const auth = firebaseAvailable ? getAuth(app) : null

@@ -14,13 +14,10 @@ export default function Students() {
   const [search, setSearch] = useState('')
   const [form, setForm] = useState({ name: '', email: '', batch: '', category: '' })
   const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!isFirebaseEnabled)
 
   useEffect(() => {
-    if (!isFirebaseEnabled) {
-      setLoading(false)
-      return
-    }
+    if (!isFirebaseEnabled) return
 
     const unsubscribe = subscribeCollection(
       'students',
@@ -152,26 +149,30 @@ export default function Students() {
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Batch</th>
-                <th>Category</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredStudents.map((student) => (
-                <tr key={student.id}>
-                  <td>{student.name}</td>
-                  <td>{student.email}</td>
-                  <td>{student.batch}</td>
-                  <td>{student.category}</td>
+          {loading ? (
+            <p>Loading students...</p>
+          ) : (
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Batch</th>
+                  <th>Category</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredStudents.map((student) => (
+                  <tr key={student.id}>
+                    <td>{student.name}</td>
+                    <td>{student.email}</td>
+                    <td>{student.batch}</td>
+                    <td>{student.category}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

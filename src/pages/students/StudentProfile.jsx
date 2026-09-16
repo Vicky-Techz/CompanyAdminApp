@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { fetchDocument } from '../../services/firestoreService'
-import { isFirebaseEnabled, FIRESTORE_SEED_DATA } from '../../config'
+import { isFirebaseEnabled } from '../../config'
 
 export default function StudentProfile() {
   const { id } = useParams()
-  const [student, setStudent] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [student, setStudent] = useState(() => ({
+    name: 'Demo Student',
+    email: 'demo@student.com',
+    batch: '2024',
+    category: 'Robotics',
+  }))
+  const [loading, setLoading] = useState(!isFirebaseEnabled)
 
   useEffect(() => {
-    if (!isFirebaseEnabled) {
-      setStudent(FIRESTORE_SEED_DATA.students[0] || { name: 'Demo Student', email: 'demo@student.com', batch: '2024', category: 'Robotics' })
-      setLoading(false)
-      return
-    }
+    if (!isFirebaseEnabled) return
 
     fetchDocument('students', id)
       .then((item) => {

@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { FIREBASE_ADMIN_USER } from '../../config'
 
 export default function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(FIREBASE_ADMIN_USER.email)
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -28,7 +29,7 @@ export default function Login() {
     <div className="auth-page">
       <div className="auth-card">
         <h2>Welcome back</h2>
-        <p>Sign in to access the Evolve dashboard.</p>
+        <p>Sign in with your Firebase account.</p>
         <form onSubmit={handleSubmit} className="auth-form">
           <label>
             Email address

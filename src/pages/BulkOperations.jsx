@@ -17,13 +17,10 @@ const fallbackAssessments = [
 export default function BulkOperations() {
   const [attendance, setAttendance] = useState(fallbackAttendance)
   const [assessments, setAssessments] = useState(fallbackAssessments)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!isFirebaseEnabled)
 
   useEffect(() => {
-    if (!isFirebaseEnabled) {
-      setLoading(false)
-      return
-    }
+    if (!isFirebaseEnabled) return
 
     fetchCollection('attendance')
       .then((items) => {

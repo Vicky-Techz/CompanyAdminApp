@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react'
 import { auth, db, isFirebaseEnabled, FIREBASE_ADMIN_USER } from '../config'
 import {
@@ -6,23 +7,46 @@ import {
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  fetchSignInMethodsForEmail,
 } from 'firebase/auth'
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 
 const AuthContext = createContext()
 
+const resolveRoleForEmail = (email) => {
+  const normalized = String(email || '').trim().toLowerCase()
+  if (!normalized) return 'user'
+  return normalized === FIREBASE_ADMIN_USER.email.toLowerCase() ? FIREBASE_ADMIN_USER.role : 'user'
+}
+
+const loadUserProfile = async (currentUser) => {
+  try {
+    const profileSnap = await getDoc(doc(db, 'users', currentUser.uid))
+    return profileSnap.exists() ? profileSnap.data() : {}
+  } catch (error) {
+    console.warn('Unable to load the Firestore user profile. Using the email-based role.', error)
+    return {}
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!isFirebaseEnabled)
 
   useEffect(() => {
-    if (!isFirebaseEnabled) {
-      setLoading(false)
-      return
-    }
+    if (!isFirebaseEnabled) return
 
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser)
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!currentUser) {
+        setUser(null)
+        setLoading(false)
+        return
+      }
+
+      const profile = await loadUserProfile(currentUser)
+      const role = profile.role || resolveRoleForEmail(currentUser.email)
+
+      setUser({ ...currentUser, role, displayName: currentUser.displayName || profile.displayName || currentUser.email.split('@')[0] })
       setLoading(false)
     })
 
@@ -49,6 +73,10 @@ export function AuthProvider({ children }) {
         return 'That email is already registered. Please log in instead.'
       case 'auth/invalid-email':
         return 'Please enter a valid email address.'
+      case 'auth/missing-email':
+        return 'Please provide an email address to reset your password.'
+      case 'auth/unauthorized-domain':
+        return 'This web domain is not authorized in Firebase. Add your app domain to Firebase Authentication authorized domains.'
       case 'auth/weak-password':
         return 'Password should be at least 6 characters.'
       default:
@@ -57,50 +85,79 @@ export function AuthProvider({ children }) {
   }
 
   const login = async (email, password) => {
+    const trimmedEmail = String(email || '').trim()
+
     if (!isFirebaseEnabled) {
-      throw new Error('Firebase is not configured. Verify .env values and restart the dev server.')
+      throw new Error('Firebase is not configured. Add the Firebase values to your .env file and restart the app.')
     }
 
     try {
-      const result = await signInWithEmailAndPassword(auth, email, password)
-      setUser(result.user)
-      return result
+      const result = await signInWithEmailAndPassword(auth, trimmedEmail, password)
+      const role = resolveRoleForEmail(result.user.email)
+
+      const userWithRole = {
+        ...result.user,
+        role,
+        displayName: result.user.displayName || result.user.email.split('@')[0],
+      }
+
+      setUser(userWithRole)
+      return userWithRole
     } catch (err) {
-      throw new Error(getFirebaseAuthErrorMessage(err))
+      throw Object.assign(new Error(getFirebaseAuthErrorMessage(err)), { cause: err })
     }
   }
 
   const createAccount = async (email, password) => {
+    const trimmedEmail = String(email || '').trim()
+    const resolvedRole = resolveRoleForEmail(trimmedEmail)
+
     if (!isFirebaseEnabled) {
-      throw new Error('Firebase is not configured. Verify .env values and restart the dev server.')
+      throw new Error('Firebase is not configured. Add the Firebase values to your .env file and restart the app.')
     }
 
     try {
-      const result = await createUserWithEmailAndPassword(auth, email, password)
-      const role = email.trim().toLowerCase() === FIREBASE_ADMIN_USER.email.toLowerCase() ? FIREBASE_ADMIN_USER.role : 'user'
+      const result = await createUserWithEmailAndPassword(auth, trimmedEmail, password)
+      const role = resolvedRole
 
       await setDoc(doc(db, 'users', result.user.uid), {
         email: result.user.email,
         role,
+        displayName: result.user.email.split('@')[0],
         createdAt: new Date(),
       }, { merge: true })
 
-      setUser(result.user)
-      return result
+      const userWithRole = {
+        ...result.user,
+        role,
+        displayName: result.user.displayName || result.user.email.split('@')[0],
+      }
+
+      setUser(userWithRole)
+      return userWithRole
     } catch (err) {
-      throw new Error(getFirebaseAuthErrorMessage(err))
+      throw Object.assign(new Error(getFirebaseAuthErrorMessage(err)), { cause: err })
     }
   }
 
   const resetPassword = async (email) => {
+    const trimmedEmail = email?.trim()
+    if (!trimmedEmail) {
+      throw new Error('Please provide a valid email address.')
+    }
+
     if (!isFirebaseEnabled) {
-      throw new Error('Firebase is not configured. Verify .env values and restart the dev server.')
+      throw new Error('Firebase is not configured. Add the Firebase values to your .env file and restart the app.')
     }
 
     try {
-      return await sendPasswordResetEmail(auth, email)
+      const methods = await fetchSignInMethodsForEmail(auth, trimmedEmail)
+      if (!methods || methods.length === 0) {
+        throw new Error('No registered authentication account found for this email.')
+      }
+      return await sendPasswordResetEmail(auth, trimmedEmail)
     } catch (err) {
-      throw new Error(getFirebaseAuthErrorMessage(err))
+      throw Object.assign(new Error(getFirebaseAuthErrorMessage(err)), { cause: err })
     }
   }
 

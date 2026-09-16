@@ -10,13 +10,10 @@ const fallbackPrograms = [
 
 export default function Programs() {
   const [programItems, setProgramItems] = useState(fallbackPrograms)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!isFirebaseEnabled)
 
   useEffect(() => {
-    if (!isFirebaseEnabled) {
-      setLoading(false)
-      return
-    }
+    if (!isFirebaseEnabled) return
 
     fetchCollection('programs').then((items) => {
       if (items.length) {

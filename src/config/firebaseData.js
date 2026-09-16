@@ -6,10 +6,9 @@
  */
 
 export const FIREBASE_ADMIN_USER = {
-  email: 'vicky.evrevolve@gmail.com',
-  password: 'admin123',
-  role: 'admin',
-  displayName: 'Evolve Admin',
+  email: 'evolveroboticsclt@gmail.com',
+  role: 'super_admin',
+  displayName: 'Evolve Robotics Admin',
 }
 
 export const INVITE_TOKENS = ['EVOLVE-ADMIN', 'EVOLVE-INVITE']
@@ -29,6 +28,8 @@ export const DEFAULT_CERTIFICATE_TEMPLATE = {
   subtitle: 'This certificate is awarded to',
   footer: 'Evolve Robotics Academy',
 }
+
+export const DEFAULT_CATEGORIES = ['School', 'College', 'Office']
 
 export const FIRESTORE_SEED_DATA = {
   students: [
@@ -62,6 +63,11 @@ export const FIRESTORE_SEED_DATA = {
   ],
   certificates: [
     { id: 'C-001', name: 'Evolve Robotics Scholarship', description: 'Completion of Robotics Program' },
+  ],
+  categories: [
+    { id: 'CAT001', name: 'School', isDefault: true },
+    { id: 'CAT002', name: 'College', isDefault: true },
+    { id: 'CAT003', name: 'Office', isDefault: true },
   ],
 }
 

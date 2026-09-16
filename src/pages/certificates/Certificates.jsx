@@ -53,7 +53,7 @@ export default function Certificates() {
       const json = JSON.parse(text)
       setTemplate((current) => ({ ...current, ...json }))
       setMessage('Certificate template loaded successfully.')
-    } catch (err) {
+    } catch {
       setMessage('Invalid JSON template file.')
     }
   }

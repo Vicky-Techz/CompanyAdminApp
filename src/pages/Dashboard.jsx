@@ -21,7 +21,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState(defaultStats)
   const [students, setStudents] = useState(defaultStudents)
   const [allStudents, setAllStudents] = useState(defaultStudents)
-  const [courseAnalytics, setCourseAnalytics] = useState(computeCourseAnalytics(defaultStudents))
+  const courseAnalytics = useMemo(() => computeCourseAnalytics(allStudents), [allStudents])
 
   useEffect(() => {
     if (!isFirebaseEnabled) {
@@ -49,16 +49,11 @@ export default function Dashboard() {
           batch: item.batch || 'N/A',
           status: item.status || 'Active',
         })))
-        setCourseAnalytics(computeCourseAnalytics(studentsData))
       })
       .catch(() => {
         // keep fallback stats and students when Firestore data is unavailable
       })
   }, [])
-
-  useEffect(() => {
-    setCourseAnalytics(computeCourseAnalytics(allStudents))
-  }, [allStudents])
 
   const filteredStudents = useMemo(() => {
     return students.filter((student) =>

@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Sidebar from './components/Sidebar'
 import TopBar from './components/TopBar'
@@ -19,6 +19,24 @@ import Tools from './pages/admin/Tools'
 import BulkOperations from './pages/admin/BulkOperations'
 import NotFound from './pages/NotFound'
 import './App.css'
+
+function RoleProtectedRoute({ allowedRoles, children }) {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return <div className="page-loader">Loading...</div>
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (!allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />
+  }
+
+  return children
+}
 
 function MainLayout() {
   return (
@@ -54,13 +72,13 @@ function App() {
             <Route path="students" element={<Students />} />
             <Route path="students/:id" element={<StudentProfile />} />
             <Route path="certificates" element={<Certificates />} />
-            <Route path="staff" element={<Staff />} />
-            <Route path="programs" element={<Programs />} />
-            <Route path="bulk" element={<BulkOperations />} />
-            <Route path="reports" element={<Reports />} />
-            <Route path="payments" element={<Payments />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="tools" element={<Tools />} />
+            <Route path="staff" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Staff /></RoleProtectedRoute>} />
+            <Route path="programs" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Programs /></RoleProtectedRoute>} />
+            <Route path="bulk" element={<RoleProtectedRoute allowedRoles={['super_admin']}><BulkOperations /></RoleProtectedRoute>} />
+            <Route path="reports" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Reports /></RoleProtectedRoute>} />
+            <Route path="payments" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Payments /></RoleProtectedRoute>} />
+            <Route path="settings" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Settings /></RoleProtectedRoute>} />
+            <Route path="tools" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Tools /></RoleProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

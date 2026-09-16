@@ -10,13 +10,10 @@ const fallbackStaff = [
 
 export default function Staff() {
   const [staff, setStaff] = useState(fallbackStaff)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!isFirebaseEnabled)
 
   useEffect(() => {
-    if (!isFirebaseEnabled) {
-      setLoading(false)
-      return
-    }
+    if (!isFirebaseEnabled) return
 
     fetchCollection('staff').then((items) => {
       if (items.length) {

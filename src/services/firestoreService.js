@@ -9,6 +9,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  deleteDoc,
 } from 'firebase/firestore'
 
 const getCollectionRef = (collectionName) => {
@@ -31,7 +32,13 @@ export const fetchCollection = async (collectionName) => {
   }
 
   const collectionRef = getCollectionRef(collectionName)
-  const snapshot = await getDocs(query(collectionRef, orderBy('createdAt', 'desc')))
+  let snapshot
+  try {
+    snapshot = await getDocs(query(collectionRef, orderBy('createdAt', 'desc')))
+  } catch (err) {
+    console.warn(`Firestore query with createdAt ordering failed for ${collectionName}, falling back to unordered fetch.`, err)
+    snapshot = await getDocs(collectionRef)
+  }
 
   return snapshot.docs.map((docSnapshot) => ({
     id: docSnapshot.id,
@@ -62,21 +69,42 @@ export const subscribeCollection = (collectionName, onUpdate, onError) => {
   }
 
   const collectionRef = getCollectionRef(collectionName)
-  const q = query(collectionRef, orderBy('createdAt', 'desc'))
-  return onSnapshot(
-    q,
-    (snapshot) => {
-      const items = snapshot.docs.map((docSnapshot) => ({
-        id: docSnapshot.id,
-        ...docSnapshot.data(),
-      }))
-      onUpdate(items)
-    },
-    (error) => {
-      console.warn('Error syncing collection', collectionName, error)
-      onError?.(error)
-    },
-  )
+  const fallbackSubscribe = () =>
+    onSnapshot(
+      collectionRef,
+      (snapshot) => {
+        const items = snapshot.docs.map((docSnapshot) => ({
+          id: docSnapshot.id,
+          ...docSnapshot.data(),
+        }))
+        onUpdate(items)
+      },
+      (error) => {
+        console.warn('Error syncing collection', collectionName, error)
+        onError?.(error)
+      },
+    )
+
+  try {
+    const q = query(collectionRef, orderBy('createdAt', 'desc'))
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs.map((docSnapshot) => ({
+          id: docSnapshot.id,
+          ...docSnapshot.data(),
+        }))
+        onUpdate(items)
+      },
+      (error) => {
+        console.warn('Error syncing collection with createdAt ordering', collectionName, error)
+        onError?.(error)
+      },
+    )
+  } catch (err) {
+    console.warn(`Firestore subscription with createdAt ordering failed for ${collectionName}, falling back to unordered subscription.`, err)
+    return fallbackSubscribe()
+  }
 }
 
 export const addCollectionItem = async (collectionName, item) => {
@@ -108,4 +136,14 @@ export const setCollectionItem = async (collectionName, id, data) => {
   await setDoc(docRef, { ...data }, { merge: true })
 
   return { id, ...data }
+}
+
+export const deleteDocument = async (collectionName, id) => {
+  if (!isFirebaseEnabled) {
+    return { id }
+  }
+
+  const docRef = doc(db, collectionName, id)
+  await deleteDoc(docRef)
+  return { id }
 }
