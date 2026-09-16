@@ -194,7 +194,7 @@ export default function StudentProfile() {
 
   return (
     <div className="page-content">
-      <div className="panel-card">
+      <div className="panel-card student-data-section">
         <div className="panel-header">
           <h3>Attendance</h3>
           <span>{attendance.length} record{attendance.length === 1 ? '' : 's'}</span>
@@ -231,7 +231,7 @@ export default function StudentProfile() {
           </div>
         )}
       </div>
-      <div className="panel-card">
+      <div className="panel-card student-data-section">
         <h2>Student profile</h2>
         {loading ? (
           <p>Loading profile...</p>
@@ -300,6 +300,10 @@ export default function StudentProfile() {
                 <p>{student?.totalCourseFee || 'Not available'}</p>
               </div>
               <div>
+                <strong>Paid fee</strong>
+                <p>{student?.paidFee || 'Not paid yet'}</p>
+              </div>
+              <div>
                 <strong>Joining Date</strong>
                 <p>{student?.joiningDate || 'Not available'}</p>
               </div>
@@ -315,7 +319,7 @@ export default function StudentProfile() {
           </>
         )}
       </div>
-      <div className="panel-card">
+      <div className="panel-card student-data-section">
         <div className="panel-header">
           <h3>Class assessment</h3>
           <span>{assessments.length} class{assessments.length === 1 ? '' : 'es'}</span>

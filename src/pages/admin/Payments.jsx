@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { addCollectionItem, fetchCollection, subscribeCollection } from '../../services/firestoreService'
+import { addCollectionItem, fetchCollection, fetchDocument, setCollectionItem, subscribeCollection } from '../../services/firestoreService'
 import { isFirebaseEnabled, FIRESTORE_SEED_DATA } from '../../config'
 
 const fallbackReceipts = FIRESTORE_SEED_DATA.receipts
@@ -72,14 +72,29 @@ export default function Payments() {
       if (isFirebaseEnabled) {
         const savedPayment = await addCollectionItem('receipts', payment)
         setReceipts((current) => [savedPayment, ...current])
-        setMessage('Payment saved to Firebase.')
+        const latestStudent = await fetchDocument('students', selectedStudent.id)
+        const paidFee = Number(latestStudent?.paidFee || selectedStudent.paidFee || 0) + amount
+        await setCollectionItem('students', selectedStudent.id, {
+          paidFee,
+          lastPaymentDate: form.paymentDate,
+        })
+        setStudents((current) => current.map((student) => (
+          student.id === selectedStudent.id
+            ? { ...student, paidFee, lastPaymentDate: form.paymentDate }
+            : student
+        )))
+        setMessage('Payment and paid fee saved to Firebase.')
       } else {
+        const paidFee = Number(selectedStudent.paidFee || 0) + amount
         setReceipts((current) => [{ id: `R-${Date.now()}`, ...payment }, ...current])
+        setStudents((current) => current.map((student) => (
+          student.id === selectedStudent.id ? { ...student, paidFee, lastPaymentDate: form.paymentDate } : student
+        )))
         setMessage('Payment added locally in demo mode.')
       }
 
       setForm((current) => ({ ...current, amount: '', paymentDate: getToday() }))
-  setStudentSearch('')
+      setStudentSearch('')
     } catch (error) {
       setMessage(`Payment could not be saved: ${error.message}`)
     }

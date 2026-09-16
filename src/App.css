@@ -755,6 +755,12 @@ button.button-secondary,
   width: 100%;
 }
 
+.student-data-section {
+  max-height: 520px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .split-panels {
   display: grid;
   grid-template-columns: 320px 1fr;

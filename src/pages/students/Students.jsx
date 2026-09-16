@@ -182,6 +182,7 @@ export default function Students() {
       subcategory: form.subcategory || '',
       joiningDate: new Date().toISOString().slice(0, 10),
       completionDate: form.completionDate || '',
+      paidFee: 0,
       notes: form.notes,
     }
 
@@ -725,6 +726,7 @@ export default function Students() {
                     <th>Contact</th>
                     <th>Batch</th>
                     <th>Total fee</th>
+                    <th>Paid fee</th>
                     <th>Category</th>
                     <th>Subcategory</th>
                     <th>Joining</th>
@@ -742,6 +744,7 @@ export default function Students() {
                       <td>{student.contact || '—'}</td>
                       <td>{student.batch}</td>
                       <td>{student.totalCourseFee ? student.totalCourseFee : '—'}</td>
+                      <td>{student.paidFee ? student.paidFee : '—'}</td>
                       <td>{student.category}</td>
                       <td>{student.subcategory || '—'}</td>
                       <td>{student.joiningDate || '—'}</td>
