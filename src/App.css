@@ -168,6 +168,54 @@
   box-shadow: 0 0 0 3px rgba(143, 94, 255, 0.1);
 }
 
+.search-box {
+  position: relative;
+}
+
+.topbar-search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 70;
+  display: grid;
+  gap: 2px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: #1a1424;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+}
+
+.topbar-search-result {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 7px;
+  background: transparent;
+  color: #ffffff;
+  text-align: left;
+}
+
+.topbar-search-result:hover,
+.topbar-search-result:focus {
+  background: rgba(143, 94, 255, 0.18);
+  outline: none;
+}
+
+.topbar-search-result span,
+.topbar-search-empty {
+  color: #b9a7ff;
+  font-size: 12px;
+}
+
+.topbar-search-empty {
+  padding: 10px;
+}
+
 .notification-button {
   display: inline-flex;
   align-items: center;
@@ -427,6 +475,10 @@
   flex-wrap: wrap;
 }
 
+.profile-actions {
+  margin-bottom: 18px;
+}
+
 .import-format-note {
   color: #b9a7ff;
   font-size: 13px;
@@ -628,9 +680,26 @@
 }
 
 .search-suggestion {
+  border: none;
+  font: inherit;
+  width: 100%;
   padding: 14px 16px;
   background: rgba(255, 255, 255, 0.04);
   border-radius: 16px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.search-suggestion:hover,
+.search-suggestion:focus {
+  background: rgba(143, 94, 255, 0.12);
+  outline: none;
+}
+
+.search-empty {
+  margin: 0;
+  color: var(--muted);
 }
 
 .data-table {
@@ -703,6 +772,53 @@ button.button-secondary,
   gap: 16px;
 }
 
+.payment-student-search {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.payment-student-suggestions {
+  position: absolute;
+  top: calc(100% - 2px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: grid;
+  gap: 2px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: #1a1424;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+}
+
+.payment-student-suggestion {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  background: transparent;
+  color: #ffffff;
+  text-align: left;
+}
+
+.payment-student-suggestion:hover,
+.payment-student-suggestion:focus {
+  background: rgba(143, 94, 255, 0.18);
+  outline: none;
+}
+
+.payment-student-suggestion span,
+.selected-student-note {
+  color: #b9a7ff;
+  font-size: 12px;
+}
+
 .form-grid-three {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -752,6 +868,16 @@ button.button-secondary,
 
 .file-upload input {
   display: none;
+}
+
+.syllabus-upload {
+  width: fit-content;
+  margin-top: 4px;
+}
+
+.syllabus-upload-field {
+  display: grid;
+  gap: 6px;
 }
 
 .form-error,

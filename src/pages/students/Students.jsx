@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { startTransition, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { read, utils } from 'xlsx'
 import { addCollectionItem, subscribeCollection, fetchCollection, setCollectionItem, deleteDocument } from '../../services/firestoreService'
@@ -6,6 +6,7 @@ import { isFirebaseEnabled, FIRESTORE_SEED_DATA, DEFAULT_CATEGORIES } from '../.
 
 const initialStudents = FIRESTORE_SEED_DATA.students
 const fallbackCategories = FIRESTORE_SEED_DATA.categories || []
+const fallbackSyllabuses = FIRESTORE_SEED_DATA.syllabuses || []
 
 const mergeWithDefaultCategories = (items = []) => {
   const normalized = Array.isArray(items) ? items : []
@@ -25,6 +26,7 @@ export default function Students() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [students, setStudents] = useState(initialStudents)
   const [search, setSearch] = useState('')
+  const editStudentId = searchParams.get('edit')
   const filterCategory = searchParams.get('category')
   const filterSubcategory = searchParams.get('subcategory')
   const [filterBatch, setFilterBatch] = useState('')
@@ -39,6 +41,10 @@ export default function Students() {
     email: '',
     batch: '',
     program: '',
+    syllabusId: '',
+    syllabusName: '',
+    syllabusContent: '',
+    totalCourseFee: '',
     category: '',
     subcategory: '',
     completionDate: '',
@@ -52,6 +58,7 @@ export default function Students() {
   const initialBatches = FIRESTORE_SEED_DATA.programs?.filter((p) => p.type === 'Batch').map((p) => p.name) || []
   const [programs, setPrograms] = useState(initialPrograms)
   const [batches, setBatches] = useState(initialBatches)
+  const [syllabuses, setSyllabuses] = useState(fallbackSyllabuses)
   const [editingId, setEditingId] = useState(null)
   const [newOptionNames, setNewOptionNames] = useState({ category: '', subcategory: '', program: '', batch: '' })
   const [activeAddOption, setActiveAddOption] = useState('')
@@ -112,10 +119,17 @@ export default function Students() {
         setBatches(items.filter((it) => it.type === 'Batch').map((p) => p.name || p))
       }
     })
+    const unsubSyllabuses = subscribeCollection('syllabuses', (items) => {
+      setSyllabuses(items)
+    })
+    fetchCollection('syllabuses')
+      .then((items) => setSyllabuses(items))
+      .catch(() => {})
 
     return () => {
       unsubCats?.()
       unsubPrograms?.()
+      unsubSyllabuses?.()
     }
   }, [])
 
@@ -160,6 +174,10 @@ export default function Students() {
       email: form.email,
       batch: form.batch || 'Unassigned',
       program: form.program || '',
+      syllabusId: form.syllabusId || '',
+      syllabusName: form.syllabusName || '',
+      syllabusContent: form.syllabusContent || '',
+      totalCourseFee: form.totalCourseFee ? Number(form.totalCourseFee) : 0,
       category: form.category || 'General',
       subcategory: form.subcategory || '',
       joiningDate: new Date().toISOString().slice(0, 10),
@@ -209,6 +227,10 @@ export default function Students() {
       email: '',
       batch: '',
       program: '',
+      syllabusId: '',
+      syllabusName: '',
+      syllabusContent: '',
+      totalCourseFee: '',
       category: '',
       completionDate: '',
       notes: '',
@@ -227,6 +249,10 @@ export default function Students() {
       email: student.email || '',
       batch: student.batch || '',
       program: student.program || '',
+      syllabusId: student.syllabusId || '',
+      syllabusName: student.syllabusName || '',
+      syllabusContent: student.syllabusContent || '',
+      totalCourseFee: student.totalCourseFee ?? '',
       category: student.category || '',
       subcategory: student.subcategory || '',
       completionDate: student.completionDate || '',
@@ -234,6 +260,14 @@ export default function Students() {
     })
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  useEffect(() => {
+    if (!editStudentId) return
+    const studentToEdit = students.find((student) => student.id === editStudentId)
+    if (studentToEdit && editingId !== editStudentId) {
+      startTransition(() => handleEdit(studentToEdit))
+    }
+  }, [students, editStudentId, editingId])
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this student? This cannot be undone.')) return
@@ -352,6 +386,7 @@ export default function Students() {
       batch: item.Batch || item.batch || 'N/A',
       category: item.Category || item.category || (categories[0] || 'General'),
       subcategory: item.Subcategory || item.subcategory || '',
+      totalCourseFee: item.TotalCourseFee || item.totalCourseFee || 0,
       joiningDate: item.JoiningDate || item.joiningDate || new Date().toISOString().slice(0, 10),
       completionDate: item.CompletionDate || item.completionDate || '',
     }))
@@ -363,6 +398,7 @@ export default function Students() {
         batch: student.batch,
         category: student.category,
         subcategory: student.subcategory,
+        totalCourseFee: Number(student.totalCourseFee) || 0,
         joiningDate: student.joiningDate,
         completionDate: student.completionDate,
       })))
@@ -385,7 +421,7 @@ export default function Students() {
             Import Students (Excel)
             <input type="file" accept=".xlsx,.xls" onChange={handleFile} hidden />
           </label>
-          <small className="import-format-note">Expected Excel columns: Name, Email, Batch, Category, Subcategory, JoiningDate, CompletionDate</small>
+          <small className="import-format-note">Expected Excel columns: Name, Email, Batch, Category, Subcategory, TotalCourseFee, JoiningDate, CompletionDate</small>
         </div>
       </div>
 
@@ -466,6 +502,40 @@ export default function Students() {
                 />
                 <button type="button" className="button-secondary" onClick={() => handleAddOption('program')}>Add</button>
               </div>}
+            </label>
+            <label>
+              Course syllabus
+              <select
+                value={form.syllabusId}
+                onChange={(e) => {
+                  const selectedSyllabus = syllabuses.find((item) => item.id === e.target.value)
+                  setForm({
+                    ...form,
+                    syllabusId: e.target.value,
+                    syllabusName: selectedSyllabus?.courseName || '',
+                    syllabusContent: selectedSyllabus?.syllabus || '',
+                  })
+                }}
+              >
+                <option value="">Select uploaded syllabus</option>
+                {syllabuses.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.courseName} {item.fileName ? `- ${item.fileName}` : ''}
+                  </option>
+                ))}
+              </select>
+              {form.syllabusName && <small className="form-note">Selected: {form.syllabusName}</small>}
+            </label>
+            <label>
+              Total course fee
+              <input
+                value={form.totalCourseFee}
+                onChange={(e) => setForm({ ...form, totalCourseFee: e.target.value })}
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Enter total course fee"
+              />
             </label>
             <label>
               Category
@@ -654,6 +724,7 @@ export default function Students() {
                     <th>Email</th>
                     <th>Contact</th>
                     <th>Batch</th>
+                    <th>Total fee</th>
                     <th>Category</th>
                     <th>Subcategory</th>
                     <th>Joining</th>
@@ -670,6 +741,7 @@ export default function Students() {
                       <td>{student.email}</td>
                       <td>{student.contact || '—'}</td>
                       <td>{student.batch}</td>
+                      <td>{student.totalCourseFee ? student.totalCourseFee : '—'}</td>
                       <td>{student.category}</td>
                       <td>{student.subcategory || '—'}</td>
                       <td>{student.joiningDate || '—'}</td>

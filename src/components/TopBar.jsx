@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { fetchCollection, subscribeCollection, setCollectionItem } from '../services/firestoreService'
-import { isFirebaseEnabled } from '../config'
+import { isFirebaseEnabled, FIRESTORE_SEED_DATA } from '../config'
 
-export default function TopBar({ onSearch }) {
+export default function TopBar() {
+  const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [query, setQuery] = useState('')
+  const [students, setStudents] = useState(FIRESTORE_SEED_DATA.students)
   const [profileOpen, setProfileOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
   const [notifications, setNotifications] = useState([
@@ -15,6 +18,7 @@ export default function TopBar({ onSearch }) {
   ])
   const profileRef = useRef(null)
   const notifRef = useRef(null)
+  const searchRef = useRef(null)
 
   const initials = useMemo(() => {
     if (!user?.email) return 'EA'
@@ -39,10 +43,27 @@ export default function TopBar({ onSearch }) {
       if (notifRef.current && !notifRef.current.contains(event.target)) {
         setNotifOpen(false)
       }
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setQuery('')
+      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  useEffect(() => {
+    if (!isFirebaseEnabled) return
+
+    fetchCollection('students').then((items) => {
+      if (items.length) setStudents(items)
+    }).catch(() => {})
+
+    const unsubscribe = subscribeCollection('students', (items) => {
+      setStudents(items)
+    })
+
+    return unsubscribe
   }, [])
 
   useEffect(() => {
@@ -61,6 +82,13 @@ export default function TopBar({ onSearch }) {
   }, [])
 
   const unreadCount = notifications.filter((n) => !n.read).length
+  const matchingStudents = query.trim()
+    ? students.filter((student) => {
+      const searchValue = query.toLowerCase().trim()
+      return [student.name, student.email, student.contact, student.phone]
+        .some((value) => String(value || '').toLowerCase().includes(searchValue))
+    }).slice(0, 8)
+    : []
 
   const markAllRead = async () => {
     if (isFirebaseEnabled) {
@@ -73,16 +101,32 @@ export default function TopBar({ onSearch }) {
     <header className="topbar">
       <div className="topbar-left">
         <h1>Dashboard</h1>
-        <div className="search-box">
+        <div className="search-box" ref={searchRef}>
           <input
             type="search"
-            placeholder="Live search students, programs..."
+            placeholder="Search students by name or phone..."
             value={query}
-            onChange={(event) => {
-              setQuery(event.target.value)
-              onSearch?.(event.target.value)
-            }}
+            onChange={(event) => setQuery(event.target.value)}
           />
+          {query && (
+            <div className="topbar-search-results">
+              {matchingStudents.map((student) => (
+                <button
+                  key={student.id}
+                  type="button"
+                  className="topbar-search-result"
+                  onClick={() => {
+                    navigate(`/students/${student.id}`)
+                    setQuery('')
+                  }}
+                >
+                  <strong>{student.name}</strong>
+                  <span>{student.contact || student.phone || student.email || 'No phone number'}</span>
+                </button>
+              ))}
+              {matchingStudents.length === 0 && <div className="topbar-search-empty">No students found.</div>}
+            </div>
+          )}
         </div>
       </div>
       <div className="topbar-right">

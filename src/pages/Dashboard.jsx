@@ -17,9 +17,7 @@ const computeCourseAnalytics = (students) => {
 }
 
 export default function Dashboard() {
-  const [search, setSearch] = useState('')
   const [stats, setStats] = useState(defaultStats)
-  const [students, setStudents] = useState(defaultStudents)
   const [allStudents, setAllStudents] = useState(defaultStudents)
   const courseAnalytics = useMemo(() => computeCourseAnalytics(allStudents), [allStudents])
 
@@ -42,25 +40,11 @@ export default function Dashboard() {
           { label: 'Certificates Issued', value: certificatesData.length, icon: '🎓' },
         ])
         setAllStudents(studentsData)
-        setStudents(studentsData.slice(0, 3).map((item) => ({
-          id: item.id,
-          name: item.name || 'Unnamed',
-          email: item.email || 'unknown@example.com',
-          batch: item.batch || 'N/A',
-          status: item.status || 'Active',
-        })))
       })
       .catch(() => {
         // keep fallback stats and students when Firestore data is unavailable
       })
   }, [])
-
-  const filteredStudents = useMemo(() => {
-    return students.filter((student) =>
-      student.name.toLowerCase().includes(search.toLowerCase()) ||
-      student.email.toLowerCase().includes(search.toLowerCase()),
-    )
-  }, [students, search])
 
   return (
     <div className="page-content dashboard-page">
@@ -172,26 +156,6 @@ export default function Dashboard() {
           </ul>
         </div>
 
-        <div className="panel search-panel">
-          <div className="panel-header">
-            <h3>Live Search</h3>
-            <span>Suggestions</span>
-          </div>
-          <input
-            type="search"
-            placeholder="Search students by name or email"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-          <div className="search-suggestions">
-            {filteredStudents.map((student) => (
-              <div key={student.id} className="search-suggestion">
-                <strong>{student.name}</strong>
-                <span>{student.email}</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
 
       <section className="dashboard-row split-panels">
@@ -210,7 +174,7 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {filteredStudents.map((student) => (
+              {allStudents.map((student) => (
                 <tr key={student.id}>
                   <td>{student.name}</td>
                   <td>{student.email}</td>

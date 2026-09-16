@@ -21,6 +21,7 @@ export const FIRESTORE_COLLECTIONS = {
   CERTIFICATES: 'certificates',
   ATTENDANCE: 'attendance',
   ASSESSMENTS: 'assessments',
+  SYLLABUSES: 'syllabuses',
 }
 
 export const DEFAULT_CERTIFICATE_TEMPLATE = {
@@ -69,6 +70,7 @@ export const FIRESTORE_SEED_DATA = {
     { id: 'CAT002', name: 'College', isDefault: true },
     { id: 'CAT003', name: 'Office', isDefault: true },
   ],
+  syllabuses: [],
 }
 
 export const DASHBOARD_DEFAULTS = {

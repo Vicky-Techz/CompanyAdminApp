@@ -11,7 +11,8 @@ const baseNavItems = [
 const adminNavItems = [
   { to: '/staff', label: 'Staff' },
   { to: '/programs', label: 'Programs / Batches' },
-  { to: '/bulk', label: 'Bulk Operations' },
+  { to: '/attendance', label: 'Attendance' },
+  { to: '/syllabus', label: 'Syllabus' },
   { to: '/reports', label: 'Reports' },
   { to: '/payments', label: 'Payments' },
   { to: '/settings', label: 'Settings' },

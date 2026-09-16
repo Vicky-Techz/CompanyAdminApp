@@ -17,6 +17,7 @@ import Payments from './pages/admin/Payments'
 import Settings from './pages/admin/Settings'
 import Tools from './pages/admin/Tools'
 import BulkOperations from './pages/admin/BulkOperations'
+import Syllabus from './pages/admin/Syllabus'
 import NotFound from './pages/NotFound'
 import './App.css'
 
@@ -74,7 +75,9 @@ function App() {
             <Route path="certificates" element={<Certificates />} />
             <Route path="staff" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Staff /></RoleProtectedRoute>} />
             <Route path="programs" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Programs /></RoleProtectedRoute>} />
-            <Route path="bulk" element={<RoleProtectedRoute allowedRoles={['super_admin']}><BulkOperations /></RoleProtectedRoute>} />
+            <Route path="attendance" element={<RoleProtectedRoute allowedRoles={['super_admin']}><BulkOperations /></RoleProtectedRoute>} />
+            <Route path="bulk" element={<Navigate to="/attendance" replace />} />
+            <Route path="syllabus" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Syllabus /></RoleProtectedRoute>} />
             <Route path="reports" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Reports /></RoleProtectedRoute>} />
             <Route path="payments" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Payments /></RoleProtectedRoute>} />
             <Route path="settings" element={<RoleProtectedRoute allowedRoles={['super_admin']}><Settings /></RoleProtectedRoute>} />

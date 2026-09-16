@@ -1,31 +1,89 @@
 import { useEffect, useState } from 'react'
-import { fetchCollection, subscribeCollection } from '../../services/firestoreService'
+import { addCollectionItem, fetchCollection, subscribeCollection } from '../../services/firestoreService'
 import { isFirebaseEnabled, FIRESTORE_SEED_DATA } from '../../config'
 
 const fallbackReceipts = FIRESTORE_SEED_DATA.receipts
+const fallbackStudents = FIRESTORE_SEED_DATA.students
+
+const getToday = () => new Date().toISOString().slice(0, 10)
 
 export default function Payments() {
   const [receipts, setReceipts] = useState(fallbackReceipts)
+  const [students, setStudents] = useState(fallbackStudents)
+  const [studentSearch, setStudentSearch] = useState('')
+  const [form, setForm] = useState({
+    studentId: '',
+    amount: '',
+    paymentType: 'Installment',
+    paymentDate: getToday(),
+  })
+  const [message, setMessage] = useState('')
+
+  const matchingStudents = studentSearch.trim()
+    ? students.filter((student) => {
+      const searchValue = studentSearch.toLowerCase()
+      return [student.name, student.email, student.batch, student.category]
+        .some((value) => String(value || '').toLowerCase().includes(searchValue))
+    }).slice(0, 8)
+    : []
 
   useEffect(() => {
     if (!isFirebaseEnabled) {
       return
     }
 
-    fetchCollection('receipts').then((items) => {
-      if (items.length) {
-        setReceipts(items)
-      }
-    })
+    fetchCollection('receipts').then((items) => setReceipts(items)).catch(() => {})
+    fetchCollection('students').then((items) => {
+      if (items.length) setStudents(items)
+    }).catch(() => {})
 
     const unsubscribe = subscribeCollection('receipts', (items) => {
-      if (items.length) {
-        setReceipts(items)
-      }
+      setReceipts(items)
+    })
+    const unsubscribeStudents = subscribeCollection('students', (items) => {
+      setStudents(items)
     })
 
-    return unsubscribe
+    return () => {
+      unsubscribe?.()
+      unsubscribeStudents?.()
+    }
   }, [])
+
+  const handleAddPayment = async (event) => {
+    event.preventDefault()
+    const selectedStudent = students.find((student) => student.id === form.studentId)
+    const amount = Number(form.amount)
+
+    if (!selectedStudent || !amount || amount <= 0 || !form.paymentDate) {
+      setMessage('Select a student and enter a valid amount and date.')
+      return
+    }
+
+    const payment = {
+      studentId: selectedStudent.id,
+      student: selectedStudent.name,
+      amount,
+      paymentType: form.paymentType,
+      paymentDate: form.paymentDate,
+    }
+
+    try {
+      if (isFirebaseEnabled) {
+        const savedPayment = await addCollectionItem('receipts', payment)
+        setReceipts((current) => [savedPayment, ...current])
+        setMessage('Payment saved to Firebase.')
+      } else {
+        setReceipts((current) => [{ id: `R-${Date.now()}`, ...payment }, ...current])
+        setMessage('Payment added locally in demo mode.')
+      }
+
+      setForm((current) => ({ ...current, amount: '', paymentDate: getToday() }))
+  setStudentSearch('')
+    } catch (error) {
+      setMessage(`Payment could not be saved: ${error.message}`)
+    }
+  }
 
   return (
     <div className="page-content">
@@ -36,12 +94,89 @@ export default function Payments() {
         </div>
       </div>
       <div className="panel-card">
+        <h3>Add payment</h3>
+        <form onSubmit={handleAddPayment} className="small-form">
+          <div className="form-grid-two">
+            <div className="payment-student-search">
+              <label htmlFor="payment-student-search">Student</label>
+              <input
+                id="payment-student-search"
+                value={studentSearch}
+                onChange={(event) => {
+                  setStudentSearch(event.target.value)
+                  setForm((current) => ({ ...current, studentId: '' }))
+                }}
+                placeholder="Search by name, email, batch..."
+                autoComplete="off"
+                required={!form.studentId}
+              />
+              {matchingStudents.length > 0 && (
+                <div className="payment-student-suggestions">
+                  {matchingStudents.map((student) => (
+                    <button
+                      key={student.id}
+                      type="button"
+                      className="payment-student-suggestion"
+                      onClick={() => {
+                        setStudentSearch(student.name)
+                        setForm((current) => ({ ...current, studentId: student.id }))
+                      }}
+                    >
+                      <strong>{student.name}</strong>
+                      <span>{student.email || 'No email'} · {student.batch || 'No batch'}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {form.studentId && <small className="selected-student-note">Student selected</small>}
+            </div>
+            <label>
+              Amount
+              <input
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={form.amount}
+                onChange={(event) => setForm({ ...form, amount: event.target.value })}
+                placeholder="Enter amount"
+                required
+              />
+            </label>
+          </div>
+          <div className="form-grid-two">
+            <label>
+              Payment type
+              <select
+                value={form.paymentType}
+                onChange={(event) => setForm({ ...form, paymentType: event.target.value })}
+              >
+                <option value="Installment">Installment</option>
+                <option value="Bulk">Bulk payment</option>
+              </select>
+            </label>
+            <label>
+              Payment date
+              <input
+                type="date"
+                value={form.paymentDate}
+                onChange={(event) => setForm({ ...form, paymentDate: event.target.value })}
+                required
+              />
+            </label>
+          </div>
+          <button type="submit" className="button-primary">Save payment</button>
+          {message && <p className="form-note">{message}</p>}
+        </form>
+      </div>
+      <div className="panel-card">
         <table className="data-table">
           <thead>
             <tr>
               <th>Student</th>
               <th>Receipt</th>
               <th>Amount</th>
+              <th>Type</th>
+              <th>Date</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -51,6 +186,8 @@ export default function Payments() {
                 <td>{receipt.student}</td>
                 <td>{receipt.id}</td>
                 <td>{receipt.amount}</td>
+                <td>{receipt.paymentType || '—'}</td>
+                <td>{receipt.paymentDate || '—'}</td>
                 <td><button className="button-secondary">Print</button></td>
               </tr>
             ))}
