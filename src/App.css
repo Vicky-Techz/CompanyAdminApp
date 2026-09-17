@@ -19,6 +19,20 @@
   overflow: hidden;
 }
 
+.dashboard-row.split-panels {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  overflow: visible;
+}
+
+.dashboard-row.split-panels > .panel {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.dashboard-row.split-panels > .panel .data-table {
+  min-width: 560px;
+}
+
 .split-panels > .panel-card {
   min-height: 0;
   overflow-y: auto;

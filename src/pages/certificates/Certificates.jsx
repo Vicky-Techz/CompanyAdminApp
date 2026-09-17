@@ -1,21 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import jsPDF from 'jspdf'
 import { fetchCollection } from '../../services/firestoreService'
-import { isFirebaseEnabled, FIRESTORE_SEED_DATA, DEFAULT_CERTIFICATE_TEMPLATE } from '../../config'
-
-const certificateTemplates = ['Evolve Robotics', 'Advanced Machine Learning', 'Embedded Systems']
-const sampleStudents = FIRESTORE_SEED_DATA.students.map((student, index) => ({
-  id: student.id,
-  name: student.name,
-  email: student.email,
-  certificate: certificateTemplates[index % certificateTemplates.length],
-}))
+import { isFirebaseEnabled, DEFAULT_CERTIFICATE_TEMPLATE } from '../../config'
 
 export default function Certificates() {
   const [selected, setSelected] = useState([])
   const [template, setTemplate] = useState(DEFAULT_CERTIFICATE_TEMPLATE)
   const [message, setMessage] = useState('')
-  const [students, setStudents] = useState(sampleStudents)
+  const [students, setStudents] = useState([])
 
   useEffect(() => {
     if (!isFirebaseEnabled) {
@@ -23,15 +15,13 @@ export default function Certificates() {
     }
 
     fetchCollection('students').then((items) => {
-      if (items.length) {
-        const certificateStudents = items.map((item) => ({
+      const certificateStudents = items.map((item) => ({
           id: item.id,
           name: item.name || 'Unnamed Student',
           email: item.email || 'unknown@example.com',
           certificate: item.certificate || 'Program Completion',
         }))
         setStudents(certificateStudents)
-      }
     })
   }, [])
 

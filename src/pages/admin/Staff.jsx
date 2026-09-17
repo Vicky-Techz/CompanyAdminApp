@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { fetchCollection, subscribeCollection, addCollectionItem } from '../../services/firestoreService'
-import { auth, isFirebaseEnabled, FIRESTORE_SEED_DATA } from '../../config'
+import { auth, isFirebaseEnabled } from '../../config'
 import { createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth'
 
-const fallbackStaff = FIRESTORE_SEED_DATA.staff
+const fallbackStaff = []
 
 export default function Staff() {
   const [staff, setStaff] = useState(fallbackStaff)

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { addCollectionItem, fetchCollection, subscribeCollection } from '../../services/firestoreService'
-import { FIRESTORE_SEED_DATA, isFirebaseEnabled } from '../../config'
+import { isFirebaseEnabled } from '../../config'
 
-const fallbackSyllabuses = FIRESTORE_SEED_DATA.syllabuses || []
+const fallbackSyllabuses = []
 
 export default function Syllabus() {
   const [syllabuses, setSyllabuses] = useState(fallbackSyllabuses)

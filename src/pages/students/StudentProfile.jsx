@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { addCollectionItem, fetchCollection, fetchDocument, setCollectionItem, subscribeCollection } from '../../services/firestoreService'
-import { FIRESTORE_SEED_DATA, isFirebaseEnabled } from '../../config'
+import { isFirebaseEnabled } from '../../config'
 
 const getToday = () => new Date().toISOString().slice(0, 10)
 
@@ -28,14 +28,9 @@ const getRemainingSyllabus = (syllabus, topicsCovered) => {
 
 export default function StudentProfile() {
   const { id } = useParams()
-  const [student, setStudent] = useState(() => ({
-    name: 'Demo Student',
-    email: 'demo@student.com',
-    batch: '2024',
-    category: 'Robotics',
-  }))
+  const [student, setStudent] = useState(null)
   const [loading, setLoading] = useState(!isFirebaseEnabled)
-  const [staff, setStaff] = useState(FIRESTORE_SEED_DATA.staff || [])
+  const [staff, setStaff] = useState([])
   const [assessments, setAssessments] = useState([])
   const [attendance, setAttendance] = useState([])
   const [assessmentForm, setAssessmentForm] = useState({

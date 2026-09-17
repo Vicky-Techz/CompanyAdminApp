@@ -3,11 +3,7 @@ import { fetchCollection } from '../../services/firestoreService'
 import { isFirebaseEnabled } from '../../config'
 
 export default function Reports() {
-  const [metrics, setMetrics] = useState({
-    students: 153,
-    assessments: 74,
-    certificates: 24,
-  })
+  const [metrics, setMetrics] = useState({ students: 0, assessments: 0, certificates: 0 })
 
   useEffect(() => {
     if (!isFirebaseEnabled) {
@@ -22,9 +18,7 @@ export default function Reports() {
           certificates: certificates.length,
         })
       })
-      .catch(() => {
-        // keep fallback metrics
-      })
+      .catch(() => {})
   }, [])
 
   return (

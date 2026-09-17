@@ -4,9 +4,9 @@ import { read, utils } from 'xlsx'
 import { addCollectionItem, subscribeCollection, fetchCollection, setCollectionItem, deleteDocument } from '../../services/firestoreService'
 import { isFirebaseEnabled, FIRESTORE_SEED_DATA, DEFAULT_CATEGORIES } from '../../config'
 
-const initialStudents = FIRESTORE_SEED_DATA.students
-const fallbackCategories = FIRESTORE_SEED_DATA.categories || []
-const fallbackSyllabuses = FIRESTORE_SEED_DATA.syllabuses || []
+const initialStudents = []
+const fallbackCategories = []
+const fallbackSyllabuses = []
 
 const mergeWithDefaultCategories = (items = []) => {
   const normalized = Array.isArray(items) ? items : []

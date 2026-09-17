@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchCollection } from '../services/firestoreService'
-import { isFirebaseEnabled, DASHBOARD_DEFAULTS } from '../config'
+import { isFirebaseEnabled } from '../config'
 
-const defaultStats = DASHBOARD_DEFAULTS.stats
-
-const defaultStudents = DASHBOARD_DEFAULTS.recentStudents
+const defaultStats = [
+  { label: 'Total Students', value: 0, icon: '👨‍🎓' },
+  { label: 'Active Batches', value: 0, icon: '📦' },
+  { label: 'Pending Approvals', value: 0, icon: '🕒' },
+  { label: 'Certificates Issued', value: 0, icon: '🎓' },
+]
 
 const computeCourseAnalytics = (students) => {
   const counts = students.reduce((acc, student) => {
@@ -18,7 +21,8 @@ const computeCourseAnalytics = (students) => {
 
 export default function Dashboard() {
   const [stats, setStats] = useState(defaultStats)
-  const [allStudents, setAllStudents] = useState(defaultStudents)
+  const [allStudents, setAllStudents] = useState([])
+  const [certificates, setCertificates] = useState([])
   const courseAnalytics = useMemo(() => computeCourseAnalytics(allStudents), [allStudents])
 
   useEffect(() => {
@@ -40,10 +44,9 @@ export default function Dashboard() {
           { label: 'Certificates Issued', value: certificatesData.length, icon: '🎓' },
         ])
         setAllStudents(studentsData)
+        setCertificates(certificatesData)
       })
-      .catch(() => {
-        // keep fallback stats and students when Firestore data is unavailable
-      })
+      .catch(() => {})
   }, [])
 
   return (
@@ -149,11 +152,7 @@ export default function Dashboard() {
             <h3>Notifications</h3>
             <span>Live</span>
           </div>
-          <ul>
-            <li>4 new students imported from Excel.</li>
-            <li>Program hierarchy updated for Spring terms.</li>
-            <li>Template upload available for certificates.</li>
-          </ul>
+          <p>No notifications available.</p>
         </div>
 
       </section>
@@ -200,21 +199,13 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Jeann Kaur</td>
-                <td>24/11/2023</td>
-                <td>Ready</td>
-              </tr>
-              <tr>
-                <td>Sanoj Patel</td>
-                <td>27/11/2023</td>
-                <td>Issued</td>
-              </tr>
-              <tr>
-                <td>Sathya Dewan</td>
-                <td>30/11/2023</td>
-                <td>Pending</td>
-              </tr>
+              {certificates.map((certificate) => (
+                <tr key={certificate.id}>
+                  <td>{certificate.student || certificate.name || 'Unnamed student'}</td>
+                  <td>{certificate.date || certificate.issuedAt || '—'}</td>
+                  <td>{certificate.status || '—'}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

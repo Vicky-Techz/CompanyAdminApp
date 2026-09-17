@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react'
 import { addCollectionItem, fetchCollection, fetchDocument, setCollectionItem, subscribeCollection } from '../../services/firestoreService'
-import { isFirebaseEnabled, FIRESTORE_SEED_DATA } from '../../config'
-
-const fallbackReceipts = FIRESTORE_SEED_DATA.receipts
-const fallbackStudents = FIRESTORE_SEED_DATA.students
+import { isFirebaseEnabled } from '../../config'
 
 const getToday = () => new Date().toISOString().slice(0, 10)
 
 export default function Payments() {
-  const [receipts, setReceipts] = useState(fallbackReceipts)
-  const [students, setStudents] = useState(fallbackStudents)
+  const [receipts, setReceipts] = useState([])
+  const [students, setStudents] = useState([])
   const [studentSearch, setStudentSearch] = useState('')
   const [form, setForm] = useState({
     studentId: '',

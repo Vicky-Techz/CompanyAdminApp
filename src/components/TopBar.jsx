@@ -2,20 +2,16 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { fetchCollection, subscribeCollection, setCollectionItem } from '../services/firestoreService'
-import { isFirebaseEnabled, FIRESTORE_SEED_DATA } from '../config'
+import { isFirebaseEnabled } from '../config'
 
 export default function TopBar() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [query, setQuery] = useState('')
-  const [students, setStudents] = useState(FIRESTORE_SEED_DATA.students)
+  const [students, setStudents] = useState([])
   const [profileOpen, setProfileOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: 'Welcome to Evolve', body: 'Your account was created.', read: false },
-    { id: 2, title: 'New student added', body: 'A student was added to Batch 2024.', read: false },
-    { id: 3, title: 'Monthly report ready', body: 'Your monthly report is available.', read: false },
-  ])
+  const [notifications, setNotifications] = useState([])
   const profileRef = useRef(null)
   const notifRef = useRef(null)
   const searchRef = useRef(null)
@@ -55,9 +51,7 @@ export default function TopBar() {
   useEffect(() => {
     if (!isFirebaseEnabled) return
 
-    fetchCollection('students').then((items) => {
-      if (items.length) setStudents(items)
-    }).catch(() => {})
+    fetchCollection('students').then((items) => setStudents(items)).catch(() => {})
 
     const unsubscribe = subscribeCollection('students', (items) => {
       setStudents(items)
@@ -75,7 +69,7 @@ export default function TopBar() {
     })
     // initial fetch
     fetchCollection('notifications').then((items) => {
-      if (items && items.length) setNotifications(items.map((it) => ({ id: it.id, title: it.title, body: it.body, read: !!it.read })))
+      setNotifications(items.map((it) => ({ id: it.id, title: it.title, body: it.body, read: !!it.read })))
     }).catch(() => {})
 
     return unsub
