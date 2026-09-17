@@ -1076,3 +1076,460 @@ button.button-secondary,
     width: 100%;
   }
 }
+
+/* Light SaaS theme overrides */
+body,
+.main-view {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.sidebar {
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+}
+
+.brand p,
+.topbar h1,
+.page-header h2,
+.panel-header h3,
+.panel-card h2,
+.panel-card h3,
+.panel-card h4,
+.data-table td,
+.search-suggestion strong,
+.topbar-search-result strong {
+  color: #0f172a;
+}
+
+.brand .brand-tagline,
+.brand span,
+.sidebar-footer,
+.sidebar-footer p,
+.page-header p,
+.metric-label,
+.data-table th,
+.form-note,
+.search-suggestion span,
+.topbar-search-result span,
+.topbar-search-empty,
+.selected-student-note {
+  color: #64748b;
+}
+
+.nav-link {
+  color: #64748b;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: #f0f9ff;
+  color: #0369a1;
+}
+
+.search-box input,
+.search-panel input,
+.table-toolbar input,
+.small-form label input,
+.small-form label select,
+.small-form label textarea,
+.panel-card input,
+.panel-card select,
+.panel-card textarea,
+.form-grid-three input,
+.form-grid-three select {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.search-box input::placeholder,
+.search-panel input::placeholder,
+.table-toolbar input::placeholder,
+.small-form label input::placeholder,
+.small-form label textarea::placeholder {
+  color: #94a3b8;
+}
+
+.search-box input:focus,
+.search-panel input:focus,
+.table-toolbar input:focus,
+.small-form label input:focus,
+.small-form label select:focus,
+.small-form label textarea:focus,
+.panel-card input:focus,
+.panel-card select:focus,
+.panel-card textarea:focus {
+  border-color: #0284c7;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14);
+}
+
+.topbar-search-results,
+.payment-student-suggestions,
+.profile-dropdown,
+.notification-dropdown {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+.topbar-search-result,
+.payment-student-suggestion {
+  color: #0f172a;
+}
+
+.topbar-search-result:hover,
+.topbar-search-result:focus,
+.payment-student-suggestion:hover,
+.payment-student-suggestion:focus {
+  background: #f0f9ff;
+}
+
+.panel,
+.panel-card,
+.metric-card,
+.quick-action-card,
+.analytics-card,
+.auth-card,
+.empty-state-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.metric-card,
+.quick-action-card:hover,
+.analytics-card {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.quick-action-card {
+  color: #0f172a;
+}
+
+.quick-action-card p,
+.analytics-card p {
+  color: #64748b;
+}
+
+.metric-icon,
+.quick-action-card span {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.data-table th,
+.data-table td {
+  border-bottom-color: #e2e8f0;
+}
+
+.data-table th {
+  color: #475569;
+}
+
+.data-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.button-primary,
+button.button-primary {
+  background: #0284c7;
+  color: #ffffff;
+  border: 1px solid #0284c7;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.button-primary:hover,
+button.button-primary:hover {
+  background: #0369a1;
+}
+
+.button-secondary,
+button.button-secondary {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+.button-secondary:hover,
+button.button-secondary:hover {
+  background: #f0f9ff;
+  border-color: #7dd3fc;
+  color: #0369a1;
+}
+
+.button-danger,
+button.button-danger {
+  background: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecdd3;
+}
+
+.avatar,
+.avatar-large {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.profile-role {
+  color: #0369a1;
+}
+
+.notification-button {
+  color: #475569;
+}
+
+.notification-badge {
+  background: #0284c7;
+}
+
+.notification-item,
+.manage-item,
+.manage-list {
+  background: #f8fafc;
+  color: #334155;
+}
+
+.notification-title,
+.profile-dropdown strong,
+.profile-meta strong {
+  color: #0f172a;
+}
+
+.notification-body,
+.profile-dropdown small,
+.profile-meta small {
+  color: #64748b;
+}
+
+.notification-item.unread {
+  border-left-color: #0284c7;
+}
+
+.auth-page {
+  background: #f8fafc;
+}
+
+.panel,
+.panel-card,
+.panel-card label,
+.panel-card p,
+.panel-card small,
+.panel-card strong,
+.auth-card,
+.auth-card label,
+.profile-content,
+.profile-content p,
+.profile-content small {
+  color: #0f172a;
+}
+
+.panel-card p,
+.panel-card small,
+.profile-content small,
+.import-format-note {
+  color: #64748b;
+}
+
+.data-table th,
+.data-table td,
+.data-table td p,
+.data-table td span {
+  color: #334155;
+}
+
+.profile-dropdown .profile-meta strong,
+.profile-dropdown .profile-meta small,
+.profile-dropdown strong,
+.profile-dropdown small,
+.notification-title,
+.notification-body,
+.notification-empty {
+  color: #0f172a;
+}
+
+.profile-dropdown .profile-meta small,
+.profile-dropdown small,
+.notification-body,
+.notification-empty {
+  color: #64748b;
+}
+
+.panel-card input,
+.panel-card textarea,
+.panel-card select,
+.small-form label input,
+.small-form label textarea,
+.small-form label select,
+.form-grid-three input,
+.form-grid-three select,
+.search-box input,
+.search-panel input,
+.table-toolbar input {
+  color: #0f172a;
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.panel-card select option,
+.small-form label select option,
+.form-grid-three select option {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.notification-button,
+.profile-pill button,
+.profile-dropdown button {
+  color: #475569;
+}
+
+.profile-dropdown .button-secondary,
+.profile-dropdown .button-secondary:hover {
+  color: #334155;
+}
+
+/* Logo-matched contrast and auth form readability */
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background: #fdf4ff;
+  color: #86198f;
+  font-weight: 600;
+}
+
+.auth-card {
+  color: #0f172a;
+}
+
+.auth-card h2 {
+  color: #86198f;
+  font-weight: 700;
+}
+
+.auth-card > p,
+.auth-form label,
+.auth-actions a {
+  color: #334155;
+  font-weight: 600;
+}
+
+.auth-form input,
+.auth-form textarea,
+.auth-form select {
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  font-weight: 500;
+  caret-color: #86198f;
+}
+
+.auth-form input::placeholder,
+.auth-form textarea::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+.auth-form input:focus,
+.auth-form textarea:focus,
+.auth-form select:focus {
+  border-color: #a21caf;
+  box-shadow: 0 0 0 3px rgba(162, 28, 175, 0.14);
+}
+
+.auth-form .button-primary,
+.auth-form button.button-primary {
+  background: #a21caf;
+  border-color: #a21caf;
+  font-weight: 700;
+}
+
+.auth-form .button-primary:hover,
+.auth-form button.button-primary:hover {
+  background: #86198f;
+}
+
+.auth-actions a:hover {
+  color: #86198f;
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  text-rendering: optimizeLegibility;
+}
+
+/* Pastel dashboard surfaces */
+.dashboard-page .metric-card:nth-child(1) {
+  background: #fce7f3;
+  border-color: #fbcfe8;
+}
+
+.dashboard-page .metric-card:nth-child(2) {
+  background: #e0f2fe;
+  border-color: #bae6fd;
+}
+
+.dashboard-page .metric-card:nth-child(3) {
+  background: #dcfce7;
+  border-color: #bbf7d0;
+}
+
+.dashboard-page .metric-card:nth-child(4) {
+  background: #fef3c7;
+  border-color: #fde68a;
+}
+
+.dashboard-page .metric-icon {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.dashboard-page .analytics-panel .panel {
+  background: #f5f3ff;
+  border-color: #ddd6fe;
+}
+
+.dashboard-page .analytics-card:nth-child(4n + 1) {
+  background: #ede9fe;
+  border-color: #ddd6fe;
+}
+
+.dashboard-page .analytics-card:nth-child(4n + 2) {
+  background: #ecfeff;
+  border-color: #a5f3fc;
+}
+
+.dashboard-page .analytics-card:nth-child(4n + 3) {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.dashboard-page .analytics-card:nth-child(4n + 4) {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.dashboard-page .notifications-panel {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.dashboard-page .notifications-panel li {
+  color: #475569;
+}
+
+.dashboard-page .dashboard-row.split-panels > .panel:nth-child(1) {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.dashboard-page .dashboard-row.split-panels > .panel:nth-child(2) {
+  background: #fdf4ff;
+  border-color: #f5d0fe;
+}
